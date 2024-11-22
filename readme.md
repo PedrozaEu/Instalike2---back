@@ -1,0 +1,1 @@
+Lembrar de semrpe salvar o arquivo antes de subir o servidor. isso estava impedindo a abertura correta da rota no navegador.
