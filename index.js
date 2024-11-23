@@ -48,3 +48,4 @@ app.get('/posts/:id', (req, res) => {
     res.status(404).json({ message: 'Post não encontrado' });
   }
 });
+//commit não subiu ver o que houve
