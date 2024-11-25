@@ -1,51 +1,28 @@
-import express from 'express'
+import express from 'express';
+import conectarAoBanco from './src/config/dbconfig.js'; // Importa a função para conectar ao banco de dados
+import routes from './src/routes/postsRoutes.js';
+import getTodosOsPosts from './src/models/postsModel.js';
 
-let postId=1;
 
-const posts = [
-  {
-    id:postId++,
-    descricao:"uma descricao qualquer", 
-    imagem:"https://placecats.com/millie/300/150",
-  },
-  {
-    id:postId++,
-    descricao:"outra descricao", 
-    imagem:"https://placecats.com/millie/300/150"
-  },
-  {
-    id:postId++,
-    descricao:"outra descricao", 
-    imagem:"https://placecats.com/millie/300/150"
-  },
-  {
-    id:postId++,
-    descricao:"outra descricao", 
-    imagem:"https://placecats.com/millie/300/150"
-  }
-];
-const app = express()
-app.use(express.json());
-app.listen(3000, () =>{
-  console.log('Servidor escutando...');
-});
+const app = express(); // Cria uma instância do Express para iniciar o servidor
+routes (app)
+// Conecta ao banco de dados e inicia o servidor
+conectarAoBanco()
+  .then(() => {
+    console.log('Conexão com o banco de dados estabelecida');
 
-function buscarPostPorID(id) {
-  return posts.findIndex((post)=>{
-    return post.id === Number(id)
+    // Define a rota para buscar todos os posts
+    app.get("/posts", async (req, res) => {
+      const posts = await getTodosOsPosts(); // Busca todos os posts no banco de dados
+      res.status(200).json(posts); // Retorna os posts como resposta JSON com status 200 (sucesso)
+    });
+
+    const port = 3000;// Define a porta em que o servidor irá escutar as requisições
+    // Inicia o servidor na porta especificada
+    app.listen(port, () => {
+      console.log(`Servidor rodando na porta ${port}`);
+    });
+  })
+  .catch(err => {
+    console.error('Erro ao iniciar o servidor:', err); // Exibe qualquer erro que ocorra durante a inicialização
   });
-};
-
-app.get('/posts', (req, res) => {
-  res.status(200).json(posts);
-})
-
-app.get('/posts/:id', (req, res) => {
-  const index = buscarPostPorID(req.params.id);
-  if (index !== -1) {
-    res.status(200).json(posts[index]);
-  } else {
-    res.status(404).json({ message: 'Post não encontrado' });
-  }
-});
-//commit não subiu ver o que houve
